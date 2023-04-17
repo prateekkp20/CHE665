@@ -1,0 +1,66 @@
+#####################################
+#variable	eq_step     equal	1.0e7
+#variable	pro_step	equal	1.0e6
+#variable	dt		    equal	0.001
+#variable	thermo_step	equal	1000
+#variable	epsilon		equal	1
+#variable	sigma		equal	1.0
+#variable	part_num	equal	500
+#variable	lj_cut		equal	2.5*${sigma}
+#variable 	S 		    equal 	step
+#variable 	T 		    equal 	300
+#variable 	P 		    equal 	press
+#variable 	V 		    equal 	vol
+#variable	rho		    equal	1.0
+#variable 	Ke 		    equal 	ke
+#variable 	Pe 		    equal 	pe
+#variable 	E 		    equal 	etotal
+#variable 	EP 		    equal 	epair
+#variable	eq_dump		equal	1e3
+#variable	pro_dump	equal	1e3
+#variable	box_length	equal   15
+#####################################
+
+# initialize simulation
+units           real
+atom_style      full
+region      box block -10 10 -10 10 -10 10
+create_box  3 box bond/types 1 angle/types 1 &
+            extra/bond/per/atom 2 extra/angle/per/atom 1 extra/special/per/atom 2
+
+mass        1 15.9994
+mass        2 1.008
+mass        3  1.008
+
+# create water molecule topology
+# read_data       water_box.dat
+
+# set up TIP5P water model
+pair_style lj/cut/coul/cut 8.0
+pair_coeff 1 1 0.160  3.12
+pair_coeff 2 2 0.0    1.0
+pair_coeff 3 3 0.0    1.0
+
+# define force fields
+bond_style      zero
+bond_coeff   1 0.9574
+angle_style     zero
+dihedral_style  charmm
+
+# define simulation parameters
+thermo_style    custom step temp press
+thermo          1000
+timestep        2.0
+
+# set initial temperature and pressure
+velocity        all create 300.0 12345
+fix             1 all npt temp 300.0 300.0 100.0 iso 1.0 1.0 1000.0
+
+# compute radial distribution function of water
+compute         rdf all rdf 100 1 1
+
+# output RDF data
+fix             2 all ave/time 1 1000 100000 c_rdf[*] file rdf.dat mode vector
+
+# run simulation
+run             1000000

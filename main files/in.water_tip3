@@ -1,0 +1,41 @@
+units       real
+atom_style  full
+region      box block 0 15 0 15 0 15
+create_box  2 box bond/types 1 angle/types 1 &
+            extra/bond/per/atom 2 extra/angle/per/atom 1 extra/special/per/atom 2
+
+mass        1 15.9994
+mass        2 1.008
+
+pair_style   lj/cut/coul/cut 8.0
+pair_coeff   1 1 0.1521 3.1507
+pair_coeff   2 2 0.0    1.0
+
+bond_style   zero
+bond_coeff   1 0.9574
+
+angle_style  zero
+angle_coeff  1 104.52
+
+molecule     water tip3p.mol
+create_atoms 0 random 30 32564 NULL mol water 25367 #overlap 1.33
+
+
+
+fix          rigid all shake 0.001 10 10000 b 1 a 1
+#minimize     0.0 0.0 1000 10000
+run 0 post no
+
+reset_timestep 0
+velocity    all create 300.0 5463576
+fix         1 all npt temp 300.0 300.0 100.0 iso 0.0 0.0 1000.0
+fix         4 all temp/rescale 1 300.0 300.0 0.1 1.0
+#fix      integrate all nvt temp 300 300 1.0
+
+dump         1 all custom 100 water.lammpstrj id type x y z q
+thermo_style custom step temp press etotal pe
+thermo 100
+timestep    0.01
+run         2000000
+write_data  tip3p.data nocoeff
+

@@ -1,0 +1,41 @@
+LAMMPS (28 Mar 2023)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Users\asus\AppData\Local\LAMMPS 64-bit 28Mar2023\plugins
+units real
+atom_style charge
+region box block 0 15 0 15 0 15
+create_box 3 box
+Created orthogonal box = (0 0 0) to (15 15 15)
+  1 by 1 by 1 MPI processor grid
+
+mass        1 15.9994
+mass        2 1.008
+mass        3  1.008
+
+pair_style lj/cut/coul/cut 8.0
+pair_coeff 1 1 0.160  3.12
+pair_coeff 2 2 0.0    1.0
+pair_coeff 3 3 0.0    1.0
+
+fix mol all property/atom mol
+WARNING: Fix property/atom mol, charge, rmass, temperature, or heatflow w/out ghost communication (src/fix_property_atom.cpp:194)
+molecule water tip5p.mol
+Read molecule template water:
+  1 molecules
+  0 fragments
+  5 atoms with max type 3
+  0 bonds with max type 0
+  0 angles with max type 0
+  0 dihedrals with max type 0
+  0 impropers with max type 0
+create_atoms 0 random 150 34564 NULL mol water 25367 overlap 1.33
+WARNING: Only inserted 106 particles out of 150 (src/create_atoms.cpp:855)
+Created 530 atoms
+  using lattice units in orthogonal box = (0 0 0) to (15 15 15)
+  create_atoms CPU = 0.095 seconds
+
+timestep 0.20
+fix integrate all rigid/nvt/small molecule temp 300.0 300.0 1.0
+ERROR: Fix rigid/small requires an atom map, see atom_modify (src/RIGID/fix_rigid_small.cpp:159)
+Last command: fix integrate all rigid/nvt/small molecule temp 300.0 300.0 1.0
